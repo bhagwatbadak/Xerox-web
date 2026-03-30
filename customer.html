@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PrintXero — Place Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f4efe6;
+            color: #0c0c10;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 15% 10%, rgba(212, 65, 12, .05) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(244, 239, 230, .93);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(12, 12, 16, .1);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 19px;
+            letter-spacing: -.4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-chip {
+            background: #d4410c;
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .user-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6e6a63;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid rgba(12, 12, 16, .15);
+            border-radius: 7px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #6e6a63;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+
+        .logout-btn:hover {
+            background: #0c0c10;
+            color: #fff;
+            border-color: #0c0c10;
+        }
+
+        /* HERO */
+        .hero {
+            padding: 56px 40px 36px;
+            max-width: 860px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .hero-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: #fff;
+            border: 1px solid rgba(12, 12, 16, .1);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #6e6a63;
+            margin-bottom: 24px;
+        }
+
+        .hero-pill-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #d4410c;
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(36px, 6vw, 64px);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -2px;
+            margin-bottom: 14px;
+        }
+
+        h1 em {
+            font-style: normal;
+            color: #d4410c;
+        }
+
+        .hero p {
+            font-size: 15px;
+            color: #6e6a63;
+            max-width: 420px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        /* CARD */
+        .wrap {
+            padding: 0 40px 60px;
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 24px;
+            border: 1px solid rgba(12, 12, 16, .1);
+            box-shadow: 0 6px 32px rgba(12, 12, 16, .1);
+            overflow: hidden;
+        }
+
+        .sec-hdr {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 26px 30px 0;
+        }
+
+        .step-num {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #0c0c10;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .sec-hdr h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            margin: 18px 30px;
+            border: 2px dashed rgba(12, 12, 16, .12);
+            border-radius: 16px;
+            padding: 44px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all .25s;
+            background: #f4efe6;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.over {
+            border-color: #d4410c;
+            background: rgba(212, 65, 12, .03);
+        }
+
+        .dz-icon {
+            width: 56px;
+            height: 56px;
+            background: #ece6d9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+            transition: transform .2s;
+        }
+
+        .drop-zone:hover .dz-icon {
+            transform: scale(1.1) rotate(-4deg);
+        }
+
+        .dz-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .dz-sub {
+            font-size: 13px;
+            color: #6e6a63;
+            margin-bottom: 16px;
+        }
+
+        .dz-btn {
+            background: #0c0c10;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: background .2s;
+        }
+
+        .dz-btn:hover {
+            background: #d4410c;
+        }
+
+        .dz-fmt {
+            margin-top: 9px;
+            font-size: 11px;
+            color: #6e6a63;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* File preview */
+        .fp {
+            display: none;
+            margin: 0 30px 18px;
+            padding: 13px;
+            background: #f4efe6;
+            border-radius: 11px;
+            border: 1px solid rgba(12, 12, 16, .1);
+            align-items: center;
+            gap: 13px;
+        }
+
+        .fp.show {
+            display: flex;
+        }
+
+        .fp-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: #ece6d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border: 1px solid rgba(12, 12, 16, .1);
+        }
+
+        .fp-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .fp-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .fp-name {
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fp-meta {
+            font-size: 11px;
+            color: #6e6a63;
+            margin-top: 2px;
+        }
+
+        .fp-rm {
+            background: none;
+            border: 1px solid rgba(12, 12, 16, .12);
+            border-radius: 6px;
+            padding: 4px 9px;
+            font-size: 11px;
+            color: #6e6a63;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            flex-shrink: 0;
+        }
+
+        .fp-rm:hover {
+            border-color: #d4410c;
+            color: #d4410c;
+        }
+
+        /* Upload progress */
+        .up-prog {
+            display: none;
+            margin: 0 30px 16px;
+            padding: 12px;
+            background: #f4efe6;
+            border-radius: 10px;
+            border: 1px solid rgba(12, 12, 16, .1);
+        }
+
+        .up-prog.show {
+            display: block;
+        }
+
+        .up-lbl {
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 7px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .up-bar {
+            height: 4px;
+            background: #ece6d9;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .up-fill {
+            height: 100%;
+            background: #d4410c;
+            border-radius: 2px;
+            width: 0%;
+            transition: width .3s;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(12, 12, 16, .08);
+            margin: 4px 30px 0;
+        }
+
+        /* Options grid */
+        .opts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            padding: 22px 30px;
+        }
+
+        .og label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            color: #6e6a63;
+            margin-bottom: 6px;
+        }
+
+        .sel {
+            width: 100%;
+            padding: 9px 13px;
+            border: 1.5px solid rgba(12, 12, 16, .1);
+            border-radius: 9px;
+            background: #f4efe6;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            color: #0c0c10;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236e6a63' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            cursor: pointer;
+            transition: border-color .2s;
+        }
+
+        .sel:focus {
+            outline: none;
+            border-color: #d4410c;
+        }
+
+        .col-tog {
+            display: flex;
+            gap: 7px;
+        }
+
+        .col-opt {
+            flex: 1;
+            padding: 9px 7px;
+            border: 1.5px solid rgba(12, 12, 16, .1);
+            border-radius: 9px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .col-opt.on {
+            border-color: #0c0c10;
+            background: #0c0c10;
+            color: #fff;
+        }
+
+        .sw {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .copies-row {
+            display: flex;
+            align-items: center;
+            border: 1.5px solid rgba(12, 12, 16, .1);
+            border-radius: 9px;
+            overflow: hidden;
+            background: #f4efe6;
+        }
+
+        .cpb {
+            padding: 7px 13px;
+            border: none;
+            background: none;
+            font-size: 17px;
+            cursor: pointer;
+            color: #0c0c10;
+            transition: background .15s;
+            line-height: 1;
+        }
+
+        .cpb:hover {
+            background: #ece6d9;
+        }
+
+        .cpv {
+            flex: 1;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            border: none;
+            background: none;
+            color: #0c0c10;
+            width: 46px;
+        }
+
+        /* Notes */
+        .notes {
+            padding: 0 30px 22px;
+        }
+
+        .notes label {
+            display: block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            color: #6e6a63;
+            margin-bottom: 6px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 11px 13px;
+            border: 1.5px solid rgba(12, 12, 16, .1);
+            border-radius: 9px;
+            background: #f4efe6;
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            color: #0c0c10;
+            resize: vertical;
+            min-height: 70px;
+            transition: border-color .2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #d4410c;
+        }
+
+        /* Price */
+        .price-box {
+            margin: 0 30px 22px;
+            background: #f4efe6;
+            border-radius: 12px;
+            padding: 16px 18px;
+            border: 1px solid rgba(12, 12, 16, .1);
+        }
+
+        .pr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #6e6a63;
+            margin-bottom: 8px;
+        }
+
+        .pr.total {
+            border-top: 1px solid rgba(12, 12, 16, .1);
+            padding-top: 11px;
+            margin-top: 3px;
+            font-size: 16px;
+            font-weight: 800;
+            color: #0c0c10;
+            font-family: 'Syne', sans-serif;
+            margin-bottom: 0;
+        }
+
+        .pv {
+            font-weight: 500;
+            color: #0c0c10;
+        }
+
+        /* Submit */
+        .sub-wrap {
+            padding: 0 30px 30px;
+        }
+
+        .sub-btn {
+            width: 100%;
+            background: #0c0c10;
+            color: #fff;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            letter-spacing: -.2px;
+            transition: all .22s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+        }
+
+        .sub-btn:hover:not(:disabled) {
+            background: #d4410c;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 65, 12, .28);
+        }
+
+        .sub-btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .sub-btn .sp {
+            width: 15px;
+            height: 15px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: none;
+        }
+
+        .sub-btn.loading .sp {
+            display: block;
+        }
+
+        .sub-btn.loading .bt {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Features */
+        .feats {
+            display: flex;
+            margin: 0 40px 56px;
+            border: 1px solid rgba(12, 12, 16, .1);
+            border-radius: 16px;
+            overflow: hidden;
+            background: #fff;
+            max-width: 860px;
+        }
+
+        .feat {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 5px;
+            border-right: 1px solid rgba(12, 12, 16, .1);
+        }
+
+        .feat:last-child {
+            border-right: none;
+        }
+
+        .feat-i {
+            font-size: 18px;
+        }
+
+        .feat-t {
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .feat-s {
+            font-size: 10px;
+            color: #6e6a63;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            background: #0c0c10;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transform: translateY(70px);
+            opacity: 0;
+            transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Auth guard overlay */
+        .auth-guard {
+            position: fixed;
+            inset: 0;
+            background: #f4efe6;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #6e6a63;
+        }
+
+        .auth-guard.hidden {
+            display: none;
+        }
+
+        @media(max-width:600px) {
+            nav {
+                padding: 0 16px;
+            }
+
+            .hero,
+            .wrap {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+
+            .opts {
+                grid-template-columns: 1fr;
+            }
+
+            .feats {
+                flex-direction: column;
+                margin: 0 16px 40px;
+            }
+
+            .feat {
+                border-right: none;
+                border-bottom: 1px solid rgba(12, 12, 16, .1);
+            }
+
+            .feat:last-child {
+                border-bottom: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Auth guard — shown while checking login -->
+    <div class="auth-guard" id="auth-guard">
+        <div
+            style="width:28px;height:28px;border:3px solid #ece6d9;border-top-color:#d4410c;border-radius:50%;animation:spin .7s linear infinite;">
+        </div>
+        Checking login…
+    </div>
+
+    <nav>
+        <div class="logo">PrintXero <span class="logo-chip">XEROX</span></div>
+        <div class="user-bar">
+            <span class="user-name" id="user-name">—</span>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-pill">
+            <div class="hero-pill-dot"></div> Customer Portal
+        </div>
+        <h1>Print anything,<br /><em>anywhere.</em></h1>
+        <p>Upload your file, pick your settings, and we'll have it ready at the shop.</p>
+    </div>
+
+    <div class="wrap">
+        <div class="card">
+
+            <!-- Step 1: Upload -->
+            <div class="sec-hdr">
+                <div class="step-num">1</div>
+                <h2>Upload your file or photo</h2>
+            </div>
+
+            <div class="drop-zone" id="dz" onclick="document.getElementById('file-input').click()"
+                ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+                <div class="dz-icon">📄</div>
+                <div class="dz-title">Drop your file here</div>
+                <div class="dz-sub">PDF, Word, Excel, JPG, PNG — any format</div>
+                <button class="dz-btn"
+                    onclick="event.stopPropagation();document.getElementById('file-input').click()">Browse File</button>
+                <div class="dz-fmt">PDF · DOC · DOCX · XLS · JPG · PNG · HEIC</div>
+            </div>
+            <input type="file" id="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.heic,.webp"
+                onchange="onFileSelect(this)" />
+
+            <div class="fp" id="fp">
+                <div class="fp-thumb" id="fp-thumb">📄</div>
+                <div class="fp-info">
+                    <div class="fp-name" id="fp-name">—</div>
+                    <div class="fp-meta" id="fp-meta">—</div>
+                </div>
+                <button class="fp-rm" onclick="removeFile()">✕ Remove</button>
+            </div>
+
+            <div class="up-prog" id="up-prog">
+                <div class="up-lbl"><span>Uploading…</span><span id="up-pct">0%</span></div>
+                <div class="up-bar">
+                    <div class="up-fill" id="up-fill"></div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Step 2: Settings -->
+            <div class="sec-hdr" style="padding-top:22px;">
+                <div class="step-num">2</div>
+                <h2>Configure print settings</h2>
+            </div>
+
+            <div class="opts">
+                <div class="og">
+                    <label>Color Mode</label>
+                    <div class="col-tog">
+                        <div class="col-opt on" id="bw-opt" onclick="setColor('bw')">
+                            <div class="sw"
+                                style="background:linear-gradient(135deg,#000 50%,#fff 50%);border:1px solid #ccc;">
+                            </div> B&W
+                        </div>
+                        <div class="col-opt" id="cl-opt" onclick="setColor('color')">
+                            <div class="sw" style="background:conic-gradient(red,yellow,green,blue,red);"></div> Color
+                        </div>
+                    </div>
+                </div>
+                <div class="og">
+                    <label>Paper Size</label>
+                    <select class="sel" id="paper-size" onchange="calcPrice()">
+                        <option value="a4">A4 — 210×297mm</option>
+                        <option value="a3">A3 — 297×420mm</option>
+                        <option value="letter">Letter — 8.5"×11"</option>
+                        <option value="legal">Legal — 8.5"×14"</option>
+                        <option value="photo4x6">Photo 4"×6"</option>
+                        <option value="photo5x7">Photo 5"×7"</option>
+                    </select>
+                </div>
+                <div class="og">
+                    <label>Print Side</label>
+                    <select class="sel" id="print-side" onchange="calcPrice()">
+                        <option value="single">Single-sided</option>
+                        <option value="double">Double-sided (Duplex)</option>
+                    </select>
+                </div>
+                <div class="og">
+                    <label>Paper Quality</label>
+                    <select class="sel" id="paper-quality" onchange="calcPrice()">
+                        <option value="standard">Standard — 75 gsm</option>
+                        <option value="premium">Premium — 100 gsm</option>
+                        <option value="glossy">Glossy Photo — 180 gsm</option>
+                        <option value="matte">Matte Finish — 160 gsm</option>
+                    </select>
+                </div>
+                <div class="og">
+                    <label>Binding</label>
+                    <select class="sel" id="binding" onchange="calcPrice()">
+                        <option value="none">None — Loose pages</option>
+                        <option value="staple">Stapled</option>
+                        <option value="spiral">Spiral Binding</option>
+                        <option value="folder">Presentation Folder</option>
+                    </select>
+                </div>
+                <div class="og">
+                    <label>Copies</label>
+                    <div class="copies-row">
+                        <button class="cpb" onclick="chgCopies(-1)">−</button>
+                        <input class="cpv" type="number" id="copies" value="1" min="1" max="999"
+                            onchange="calcPrice()" />
+                        <button class="cpb" onclick="chgCopies(1)">+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes">
+                <label>Special Instructions (optional)</label>
+                <textarea id="notes"
+                    placeholder="e.g. Print pages 2–5 only, landscape for page 3, urgent by 12 PM…"></textarea>
+            </div>
+
+            <div class="divider" style="margin-bottom:0;"></div>
+
+            <div class="price-box" style="margin-top:18px;">
+                <div class="pr"><span>Base price (per copy)</span><span class="pv" id="pp">₹ 1.50</span></div>
+                <div class="pr"><span>Copies</span><span class="pv" id="cpx">× 1</span></div>
+                <div class="pr"><span>Paper upgrade</span><span class="pv" id="qp">+ ₹ 0.00</span></div>
+                <div class="pr"><span>Binding</span><span class="pv" id="bp">+ ₹ 0.00</span></div>
+                <div class="pr total"><span>Estimated Total</span><span id="total">₹ 1.50</span></div>
+            </div>
+
+            <div class="sub-wrap">
+                <button class="sub-btn" id="sub-btn" onclick="submitOrder()">
+                    <div class="sp"></div>
+                    <span class="bt">🖨 &nbsp;Place Print Order</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="feats" style="max-width:860px;margin-left:auto;margin-right:auto;">
+        <div class="feat">
+            <div class="feat-i">⚡</div>
+            <div class="feat-t">Ready in 15 min</div>
+            <div class="feat-s">Fast turnaround</div>
+        </div>
+        <div class="feat">
+            <div class="feat-i">🔒</div>
+            <div class="feat-t">Files are private</div>
+            <div class="feat-s">Deleted after print</div>
+        </div>
+        <div class="feat">
+            <div class="feat-i">📦</div>
+            <div class="feat-t">All formats</div>
+            <div class="feat-s">PDF, Word, photos</div>
+        </div>
+        <div class="feat">
+            <div class="feat-i">💳</div>
+            <div class="feat-t">Pay at shop</div>
+            <div class="feat-s">No advance needed</div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ════════════════════════════════════════
+        // ⚙️  PASTE YOUR SUPABASE KEYS HERE
+        // ════════════════════════════════════════
+        var SUPABASE_URL = 'https://nyoergouyiazkqhvftcc.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55b2VyZ291eWlhemtxaHZmdGNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MDA5NDAsImV4cCI6MjA5MDM3Njk0MH0.rHL6RQBdRlmuPgRdRqjpTJ5xkyPIIiubhR6GkHrVUGA';
+        // ════════════════════════════════════════
+
+        var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var PX = { file: null, colorMode: 'bw', userId: null, userEmail: null, toastTimer: null };
+
+        // ── AUTH GUARD ──
+        window.addEventListener('load', async function () {
+            var { data } = await sb.auth.getSession();
+            if (!data.session) {
+                window.location.href = 'login.html';
+                return;
+            }
+            // Check role — if shopkeeper somehow lands here, redirect
+            var user = data.session.user;
+            var { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).single();
+            if (profile && profile.role === 'shopkeeper') {
+                window.location.href = 'shopkeeper.html';
+                return;
+            }
+            PX.userId = user.id;
+            PX.userEmail = user.email;
+            document.getElementById('user-name').textContent = user.user_metadata.full_name || user.email;
+            document.getElementById('auth-guard').classList.add('hidden');
+            calcPrice();
+        });
+
+        async function logout() {
+            await sb.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        // ── FILE ──
+        function onFileSelect(inp) { if (inp.files[0]) setFile(inp.files[0]); }
+        function onDragOver(e) { e.preventDefault(); document.getElementById('dz').classList.add('over'); }
+        function onDragLeave() { document.getElementById('dz').classList.remove('over'); }
+        function onDrop(e) { e.preventDefault(); document.getElementById('dz').classList.remove('over'); if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); }
+
+        function setFile(file) {
+            PX.file = file;
+            var ext = file.name.split('.').pop().toLowerCase();
+            document.getElementById('fp-name').textContent = file.name;
+            document.getElementById('fp-meta').textContent = (file.size / 1024).toFixed(1) + ' KB · ' + ext.toUpperCase();
+            var thumb = document.getElementById('fp-thumb');
+            if (file.type.startsWith('image/')) {
+                var r = new FileReader();
+                r.onload = function (e) { thumb.innerHTML = '<img src="' + e.target.result + '" alt=""/>'; };
+                r.readAsDataURL(file);
+            } else {
+                thumb.innerHTML = ({ pdf: '📄', doc: '📝', docx: '📝', xls: '📊', xlsx: '📊' })[ext] || '📁';
+            }
+            document.getElementById('fp').classList.add('show');
+        }
+        function removeFile() {
+            PX.file = null;
+            document.getElementById('fp').classList.remove('show');
+            document.getElementById('fp-thumb').innerHTML = '📄';
+            document.getElementById('file-input').value = '';
+        }
+
+        // ── COLOR ──
+        function setColor(m) {
+            PX.colorMode = m;
+            document.getElementById('bw-opt').classList.toggle('on', m === 'bw');
+            document.getElementById('cl-opt').classList.toggle('on', m === 'color');
+            calcPrice();
+        }
+
+        // ── COPIES ──
+        function chgCopies(d) {
+            var el = document.getElementById('copies');
+            el.value = Math.max(1, Math.min(999, parseInt(el.value || 1) + d));
+            calcPrice();
+        }
+
+        // ── PRICE ──
+        function calcPrice() {
+            var copies = parseInt(document.getElementById('copies').value) || 1;
+            var size = document.getElementById('paper-size').value;
+            var quality = document.getElementById('paper-quality').value;
+            var binding = document.getElementById('binding').value;
+            var sides = document.getElementById('print-side').value;
+            var base = PX.colorMode === 'bw' ? 1.5 : 6;
+            if (size === 'a3') base *= 1.8;
+            if (size === 'legal') base *= 1.2;
+            if (size.startsWith('photo')) base = PX.colorMode === 'bw' ? 5 : 15;
+            if (sides === 'double') base *= 1.6;
+            var qe = { standard: 0, premium: 1, glossy: 5, matte: 3 }[quality] || 0;
+            var be = { none: 0, staple: 5, spiral: 35, folder: 25 }[binding] || 0;
+            var total = (base * copies) + qe + be;
+            document.getElementById('pp').textContent = '₹ ' + base.toFixed(2);
+            document.getElementById('cpx').textContent = '× ' + copies;
+            document.getElementById('qp').textContent = '+ ₹ ' + qe.toFixed(2);
+            document.getElementById('bp').textContent = '+ ₹ ' + be.toFixed(2);
+            document.getElementById('total').textContent = '₹ ' + total.toFixed(2);
+        }
+
+        // ── SUBMIT ──
+        async function submitOrder() {
+            if (!PX.file) { toast('⚠️ Please upload a file first'); return; }
+            var btn = document.getElementById('sub-btn');
+            btn.classList.add('loading'); btn.disabled = true;
+
+            function g(id) { return document.getElementById(id); }
+            var sizeEl = g('paper-size'), sideEl = g('print-side'), qualEl = g('paper-quality'), bindEl = g('binding');
+            var copies = parseInt(g('copies').value) || 1;
+            var sizeText = sizeEl.options[sizeEl.selectedIndex].text.split('—')[0].trim();
+            var sideText = sideEl.options[sideEl.selectedIndex].text;
+            var qualText = qualEl.options[qualEl.selectedIndex].text.split('—')[0].trim();
+            var bindText = bindEl.options[bindEl.selectedIndex].text;
+            var notes = g('notes').value;
+            var amount = parseFloat(g('total').textContent.replace('₹ ', ''));
+            var orderNum = 'PX-' + Date.now().toString().slice(-7);
+            var ext = PX.file.name.split('.').pop().toLowerCase();
+            var types = { pdf: 'pdf', doc: 'doc', docx: 'doc', xls: 'doc', xlsx: 'doc', jpg: 'img', jpeg: 'img', png: 'img', heic: 'img', webp: 'img' };
+
+            try {
+                // 1. Upload file
+                var up = document.getElementById('up-prog');
+                up.classList.add('show');
+                var filePath = PX.userId + '/' + orderNum + '/' + PX.file.name;
+                var upRes = await sb.storage.from('print-files').upload(filePath, PX.file);
+                up.classList.remove('show');
+                if (upRes.error) throw upRes.error;
+
+                var fileUrl = sb.storage.from('print-files').getPublicUrl(filePath).data.publicUrl;
+
+                // 2. Insert order row — tied to this user's ID
+                var dbRes = await sb.from('print_orders').insert([{
+                    user_id: PX.userId,
+                    order_number: orderNum,
+                    file_name: PX.file.name,
+                    file_url: fileUrl,
+                    file_type: types[ext] || 'pdf',
+                    color_mode: PX.colorMode,
+                    paper_size: sizeText,
+                    print_side: sideText,
+                    paper_quality: qualText,
+                    binding: bindText,
+                    copies: copies,
+                    notes: notes,
+                    amount: amount,
+                    status: 'pending'
+                }]);
+
+                if (dbRes.error) throw dbRes.error;
+
+                btn.classList.remove('loading'); btn.disabled = false;
+                toast('✅ Order ' + orderNum + ' sent to shop!');
+                removeFile(); g('notes').value = ''; g('copies').value = 1; calcPrice();
+
+            } catch (err) {
+                btn.classList.remove('loading'); btn.disabled = false;
+                toast('❌ ' + err.message);
+                console.error(err);
+            }
+        }
+
+        // ── TOAST ──
+        function toast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(PX.toastTimer);
+            PX.toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3500);
+        }
+    </script>
+</body>
+
+</html>

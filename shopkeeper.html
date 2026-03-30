@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PrintXero — Shop Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f4efe6;
+            color: #0c0c10;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse 50% 50% at 85% 15%, rgba(83, 74, 183, .05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(244, 239, 230, .93);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(12, 12, 16, .1);
+            padding: 0 40px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 19px;
+            letter-spacing: -.4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-chip {
+            background: #d4410c;
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .logo-role {
+            background: #534AB7;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .shop-chip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            border: 1px solid rgba(12, 12, 16, .1);
+            padding: 7px 13px;
+            border-radius: 10px;
+        }
+
+        .shop-av {
+            width: 30px;
+            height: 30px;
+            background: #534AB7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #fff;
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .shop-nm {
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .shop-st {
+            font-size: 10px;
+            color: #6e6a63;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .shop-st::before {
+            content: '●';
+            font-size: 7px;
+            color: #16a34a;
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid rgba(12, 12, 16, .15);
+            border-radius: 7px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #6e6a63;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+
+        .logout-btn:hover {
+            background: #0c0c10;
+            color: #fff;
+            border-color: #0c0c10;
+        }
+
+        /* DASHBOARD */
+        .dash {
+            padding: 32px 40px;
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+
+        .dash-hdr {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .dash-hdr h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -.4px;
+        }
+
+        .dash-hdr p {
+            font-size: 13px;
+            color: #6e6a63;
+            margin-top: 3px;
+        }
+
+        .refresh-btn {
+            background: #fff;
+            border: 1px solid rgba(12, 12, 16, .12);
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .refresh-btn:hover {
+            background: #0c0c10;
+            color: #fff;
+        }
+
+        /* STATS */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 22px;
+        }
+
+        .stat {
+            background: #fff;
+            border: 1px solid rgba(12, 12, 16, .1);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .stat-lbl {
+            font-size: 10px;
+            color: #6e6a63;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            margin-bottom: 7px;
+        }
+
+        .stat-val {
+            font-family: 'Syne', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .stat-sub {
+            font-size: 10px;
+            color: #6e6a63;
+            margin-top: 4px;
+        }
+
+        .c-acc {
+            color: #d4410c;
+        }
+
+        .c-grn {
+            color: #16a34a;
+        }
+
+        .c-blu {
+            color: #1a56db;
+        }
+
+        /* ORDERS PANEL */
+        .panel {
+            background: #fff;
+            border: 1px solid rgba(12, 12, 16, .1);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .panel-hdr {
+            padding: 16px 22px;
+            border-bottom: 1px solid rgba(12, 12, 16, .08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .panel-hdr h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .ftabs {
+            display: flex;
+            gap: 3px;
+        }
+
+        .ftab {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #6e6a63;
+            transition: all .2s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .ftab.active {
+            background: #0c0c10;
+            color: #fff;
+        }
+
+        .tbl-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            padding: 10px 16px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .4px;
+            text-transform: uppercase;
+            color: #6e6a63;
+            background: #f4efe6;
+            border-bottom: 1px solid rgba(12, 12, 16, .08);
+            white-space: nowrap;
+        }
+
+        td {
+            padding: 13px 16px;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(12, 12, 16, .04);
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f9f7f3;
+        }
+
+        .oid {
+            font-weight: 700;
+            font-family: 'Syne', sans-serif;
+            font-size: 13px;
+        }
+
+        .otime {
+            font-size: 10px;
+            color: #6e6a63;
+            margin-top: 1px;
+        }
+
+        .ofile-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ficon {
+            width: 28px;
+            height: 28px;
+            border-radius: 5px;
+            background: #ece6d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .fname {
+            font-weight: 500;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .fsize {
+            font-size: 10px;
+            color: #6e6a63;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            padding: 3px 8px;
+            border-radius: 100px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: .2px;
+            white-space: nowrap;
+        }
+
+        .b-pend {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .b-prnt {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .b-done {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .b-bw {
+            background: #ece6d9;
+            color: #6e6a63;
+        }
+
+        .b-col {
+            background: #fce7f3;
+            color: #9d174d;
+        }
+
+        .acts {
+            display: flex;
+            gap: 5px;
+        }
+
+        .act {
+            padding: 4px 9px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            border: 1px solid rgba(12, 12, 16, .12);
+            background: transparent;
+            color: #0c0c10;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .15s;
+            white-space: nowrap;
+        }
+
+        .act:hover {
+            background: #0c0c10;
+            color: #fff;
+            border-color: #0c0c10;
+        }
+
+        .act.pri {
+            background: #0c0c10;
+            color: #fff;
+            border-color: #0c0c10;
+        }
+
+        .act.pri:hover {
+            background: #d4410c;
+            border-color: #d4410c;
+        }
+
+        .empty {
+            padding: 48px 20px;
+            text-align: center;
+            color: #6e6a63;
+        }
+
+        .empty-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .loading-row td {
+            padding: 28px;
+            text-align: center;
+            color: #6e6a63;
+            font-size: 13px;
+        }
+
+        /* REALTIME DOT */
+        .rt-dot {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            color: #6e6a63;
+        }
+
+        .rt-dot::before {
+            content: '●';
+            font-size: 8px;
+            color: #16a34a;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: .3;
+            }
+        }
+
+        /* MODAL */
+        .modal-ov {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            background: rgba(12, 12, 16, .55);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-ov.open {
+            display: flex;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, .18);
+            animation: popIn .3s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(.88);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .md-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 9px 0;
+            border-bottom: 1px solid rgba(12, 12, 16, .07);
+            font-size: 13px;
+        }
+
+        .md-row:last-of-type {
+            border: none;
+        }
+
+        .md-row span:first-child {
+            color: #6e6a63;
+        }
+
+        .md-row span:last-child {
+            font-weight: 500;
+            text-align: right;
+            max-width: 60%;
+        }
+
+        .md-acts {
+            display: flex;
+            gap: 9px;
+            margin-top: 18px;
+        }
+
+        .md-btn {
+            flex: 1;
+            padding: 11px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Syne', sans-serif;
+            transition: all .2s;
+            border: none;
+        }
+
+        .md-sec {
+            background: #f4efe6;
+            color: #0c0c10;
+            border: 1px solid rgba(12, 12, 16, .1);
+        }
+
+        .md-sec:hover {
+            background: #ece6d9;
+        }
+
+        .md-pri {
+            background: #0c0c10;
+            color: #fff;
+        }
+
+        .md-pri:hover {
+            background: #d4410c;
+        }
+
+        .md-pri:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 999;
+            background: #0c0c10;
+            color: #fff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 500;
+            transform: translateY(70px);
+            opacity: 0;
+            transition: all .4s cubic-bezier(.34, 1.56, .64, 1);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, .2);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* AUTH GUARD */
+        .auth-guard {
+            position: fixed;
+            inset: 0;
+            background: #f4efe6;
+            z-index: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            font-family: 'Syne', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: #6e6a63;
+        }
+
+        .auth-guard.hidden {
+            display: none;
+        }
+
+        @media(max-width:640px) {
+            nav {
+                padding: 0 14px;
+            }
+
+            .dash {
+                padding: 20px 14px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="auth-guard" id="auth-guard">
+        <div
+            style="width:28px;height:28px;border:3px solid #ece6d9;border-top-color:#534AB7;border-radius:50%;animation:spin .7s linear infinite;">
+        </div>
+        Verifying shopkeeper access…
+    </div>
+
+    <nav>
+        <div class="logo">
+            PrintXero <span class="logo-chip">XEROX</span>
+            <span class="logo-role">SHOP</span>
+        </div>
+        <div class="nav-right">
+            <div class="rt-dot">Live orders</div>
+            <button class="refresh-btn" onclick="loadOrders()">↻ Refresh</button>
+            <div class="shop-chip">
+                <div class="shop-av" id="shop-av">SK</div>
+                <div>
+                    <div class="shop-nm" id="shop-nm">Shopkeeper</div>
+                    <div class="shop-st">Online · Ready</div>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="logout()">Sign Out</button>
+        </div>
+    </nav>
+
+    <div class="dash">
+        <div class="dash-hdr">
+            <div>
+                <h2>Print Orders</h2>
+                <p>All incoming customer print requests — today's queue</p>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-lbl">Today's Orders</div>
+                <div class="stat-val" id="st-total">—</div>
+                <div class="stat-sub">All statuses</div>
+            </div>
+            <div class="stat">
+                <div class="stat-lbl">Pending</div>
+                <div class="stat-val c-acc" id="st-pend">—</div>
+                <div class="stat-sub">Awaiting print</div>
+            </div>
+            <div class="stat">
+                <div class="stat-lbl">Completed</div>
+                <div class="stat-val c-grn" id="st-done">—</div>
+                <div class="stat-sub">Handed over</div>
+            </div>
+            <div class="stat">
+                <div class="stat-lbl">Revenue</div>
+                <div class="stat-val c-blu" id="st-rev">—</div>
+                <div class="stat-sub">Today</div>
+            </div>
+        </div>
+
+        <!-- Orders -->
+        <div class="panel">
+            <div class="panel-hdr">
+                <h3>📋 Incoming Orders</h3>
+                <div class="ftabs">
+                    <button class="ftab active" onclick="setFilter('all',this)">All</button>
+                    <button class="ftab" onclick="setFilter('pending',this)">Pending</button>
+                    <button class="ftab" onclick="setFilter('printing',this)">Printing</button>
+                    <button class="ftab" onclick="setFilter('done',this)">Done</button>
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order</th>
+                            <th>Customer File</th>
+                            <th>Settings</th>
+                            <th>Copies</th>
+                            <th>Status</th>
+                            <th>Amount</th>
+                            <th>Notes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody">
+                        <tr class="loading-row">
+                            <td colspan="8">⏳ Loading orders…</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-ov" id="modal-ov" onclick="closeModalOut(event)">
+        <div class="modal">
+            <h3 id="m-title">Order Details</h3>
+            <div id="m-body"></div>
+            <div class="md-acts">
+                <button class="md-btn md-sec" onclick="closeModal()">Close</button>
+                <button class="md-btn md-pri" id="m-action">Mark Done ✓</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ════════════════════════════════════════
+        // ⚙️  PASTE YOUR SUPABASE KEYS HERE
+        // ════════════════════════════════════════
+        var SUPABASE_URL = 'https://nyoergouyiazkqhvftcc.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55b2VyZ291eWlhemtxaHZmdGNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MDA5NDAsImV4cCI6MjA5MDM3Njk0MH0.rHL6RQBdRlmuPgRdRqjpTJ5xkyPIIiubhR6GkHrVUGA';
+        // ════════════════════════════════════════
+
+        var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        var PX = { orders: [], filter: 'all', toastTimer: null, realtimeCh: null };
+
+        // ── AUTH GUARD — shopkeeper only ──
+        window.addEventListener('load', async function () {
+            var { data } = await sb.auth.getSession();
+            if (!data.session) { window.location.href = 'login.html'; return; }
+
+            var user = data.session.user;
+            var { data: profile } = await sb.from('profiles').select('role,email').eq('id', user.id).single();
+
+            if (!profile || profile.role !== 'shopkeeper') {
+                // Not a shopkeeper — boot them to customer page
+                alert('Access denied. This page is for shopkeepers only.');
+                window.location.href = 'customer.html';
+                return;
+            }
+
+            // Set UI
+            var initials = (user.user_metadata.full_name || user.email || 'SK').slice(0, 2).toUpperCase();
+            document.getElementById('shop-av').textContent = initials;
+            document.getElementById('shop-nm').textContent = user.user_metadata.full_name || user.email;
+            document.getElementById('auth-guard').classList.add('hidden');
+
+            loadOrders();
+            subscribeRealtime(); // live updates!
+        });
+
+        async function logout() {
+            if (PX.realtimeCh) sb.removeChannel(PX.realtimeCh);
+            await sb.auth.signOut();
+            window.location.href = 'login.html';
+        }
+
+        // ── LOAD ORDERS ──
+        async function loadOrders() {
+            document.getElementById('tbody').innerHTML = '<tr class="loading-row"><td colspan="8">⏳ Loading from Supabase…</td></tr>';
+            var today = new Date(); today.setHours(0, 0, 0, 0);
+
+            var res = await sb.from('print_orders').select('*')
+                .gte('created_at', today.toISOString())
+                .order('created_at', { ascending: false });
+
+            if (res.error) {
+                document.getElementById('tbody').innerHTML = '<tr class="loading-row"><td colspan="8">❌ ' + res.error.message + '</td></tr>';
+                return;
+            }
+            PX.orders = res.data || [];
+            renderOrders();
+        }
+
+        // ── REALTIME — new orders appear instantly ──
+        function subscribeRealtime() {
+            PX.realtimeCh = sb.channel('print_orders_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'print_orders' }, function (payload) {
+                    if (payload.eventType === 'INSERT') {
+                        PX.orders.unshift(payload.new);
+                        renderOrders();
+                        toast('🔔 New order: #' + payload.new.order_number);
+                    } else if (payload.eventType === 'UPDATE') {
+                        var idx = PX.orders.findIndex(function (o) { return o.id === payload.new.id; });
+                        if (idx !== -1) PX.orders[idx] = payload.new;
+                        renderOrders();
+                    }
+                })
+                .subscribe();
+        }
+
+        // ── RENDER ──
+        function renderOrders() {
+            var filtered = PX.filter === 'all' ? PX.orders : PX.orders.filter(function (o) { return o.status === PX.filter; });
+
+            document.getElementById('st-total').textContent = PX.orders.length;
+            document.getElementById('st-pend').textContent = PX.orders.filter(function (o) { return o.status === 'pending'; }).length;
+            document.getElementById('st-done').textContent = PX.orders.filter(function (o) { return o.status === 'done'; }).length;
+            var rev = PX.orders.reduce(function (s, o) { return s + parseFloat(o.amount || 0); }, 0);
+            document.getElementById('st-rev').textContent = '₹' + rev.toFixed(0);
+
+            var tbody = document.getElementById('tbody');
+            if (!filtered.length) {
+                tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📭</div><p>No ' + (PX.filter === 'all' ? '' : PX.filter) + ' orders yet</p></div></td></tr>';
+                return;
+            }
+
+            var icons = { pdf: '📄', doc: '📝', img: '🖼️' };
+            function sbadge(s) {
+                return { pending: '<span class="badge b-pend">⏳ Pending</span>', printing: '<span class="badge b-prnt">🖨 Printing</span>', done: '<span class="badge b-done">✅ Done</span>' }[s] || s;
+            }
+            function cbadge(c) {
+                return c === 'bw' ? '<span class="badge b-bw">⬛ B&W</span>' : '<span class="badge b-col">🎨 Color</span>';
+            }
+
+            tbody.innerHTML = filtered.map(function (o) {
+                var t = new Date(o.created_at).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+                var ficon = icons[o.file_type] || '📁';
+                var side = (o.print_side || '').split('-')[0];
+                var bindRow = (o.binding && o.binding !== 'None' && o.binding !== 'none') ? '<div style="font-size:10px;color:#1a56db;margin-top:2px;">📎 ' + o.binding + '</div>' : '';
+                var pBtn = o.status === 'pending' ? '<button class="act pri" onclick="updateStatus(\'' + o.id + '\',\'printing\')">Print ▶</button>' : '';
+                var dBtn = o.status === 'printing' ? '<button class="act pri" onclick="updateStatus(\'' + o.id + '\',\'done\')">Done ✓</button>' : '';
+                var dlBtn = o.file_url ? '<a href="' + o.file_url + '" target="_blank"><button class="act">⬇ File</button></a>' : '';
+                return '<tr>' +
+                    '<td><div class="oid">#' + o.order_number + '</div><div class="otime">' + t + '</div></td>' +
+                    '<td><div class="ofile-row"><div class="ficon">' + ficon + '</div><div><div class="fname">' + o.file_name + '</div><div class="fsize">' + o.paper_size + '</div></div></div></td>' +
+                    '<td>' + cbadge(o.color_mode) + '<div style="font-size:10px;color:#6e6a63;margin-top:3px;">' + side + ' · ' + o.paper_quality + '</div>' + bindRow + '</td>' +
+                    '<td style="font-weight:700;font-family:\'Syne\',sans-serif;font-size:16px;">' + o.copies + '</td>' +
+                    '<td>' + sbadge(o.status) + '</td>' +
+                    '<td style="font-weight:700;font-family:\'Syne\',sans-serif;">₹' + parseFloat(o.amount).toFixed(0) + '</td>' +
+                    '<td style="max-width:120px;font-size:11px;color:#6e6a63;">' + (o.notes || '—') + '</td>' +
+                    '<td><div class="acts"><button class="act" onclick="viewOrder(\'' + o.id + '\')">View</button>' + pBtn + dBtn + dlBtn + '</div></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function setFilter(f, el) {
+            PX.filter = f;
+            document.querySelectorAll('.ftab').forEach(function (t) { t.classList.remove('active'); });
+            el.classList.add('active');
+            renderOrders();
+        }
+
+        // ── UPDATE STATUS ──
+        async function updateStatus(id, status) {
+            var o = PX.orders.find(function (x) { return x.id === id; });
+            if (!o) return;
+            var res = await sb.from('print_orders').update({ status: status }).eq('id', id);
+            if (res.error) { toast('❌ ' + res.error.message); return; }
+            o.status = status;
+            renderOrders();
+            toast('#' + o.order_number + ' → ' + status);
+            closeModal();
+        }
+
+        // ── VIEW ORDER MODAL ──
+        function viewOrder(id) {
+            var o = PX.orders.find(function (x) { return x.id === id; });
+            if (!o) return;
+            document.getElementById('m-title').textContent = 'Order #' + o.order_number;
+            var fileRow = o.file_url ? '<div class="md-row"><span>Download file</span><span><a href="' + o.file_url + '" target="_blank" style="color:#1a56db;">Open file ↗</a></span></div>' : '';
+            var notesRow = o.notes ? '<div class="md-row"><span>Instructions</span><span>' + o.notes + '</span></div>' : '';
+            document.getElementById('m-body').innerHTML =
+                '<div class="md-row"><span>File</span><span>' + o.file_name + '</span></div>' +
+                '<div class="md-row"><span>Paper size</span><span>' + o.paper_size + '</span></div>' +
+                '<div class="md-row"><span>Color mode</span><span>' + (o.color_mode === 'bw' ? 'Black & White' : 'Full Color') + '</span></div>' +
+                '<div class="md-row"><span>Print side</span><span>' + o.print_side + '</span></div>' +
+                '<div class="md-row"><span>Paper quality</span><span>' + o.paper_quality + '</span></div>' +
+                '<div class="md-row"><span>Binding</span><span>' + o.binding + '</span></div>' +
+                '<div class="md-row"><span>Copies</span><span>' + o.copies + '</span></div>' +
+                '<div class="md-row"><span>Status</span><span>' + o.status + '</span></div>' +
+                '<div class="md-row"><span>Amount</span><span style="color:#d4410c;font-weight:700;">₹ ' + parseFloat(o.amount).toFixed(2) + '</span></div>' +
+                notesRow + fileRow;
+
+            var btn = document.getElementById('m-action');
+            btn.disabled = false;
+            if (o.status === 'pending') { btn.textContent = '🖨 Start Printing'; btn.onclick = function () { updateStatus(o.id, 'printing'); }; }
+            else if (o.status === 'printing') { btn.textContent = '✅ Mark as Done'; btn.onclick = function () { updateStatus(o.id, 'done'); }; }
+            else { btn.textContent = 'Completed ✓'; btn.disabled = true; }
+            document.getElementById('modal-ov').classList.add('open');
+        }
+        function closeModalOut(e) { if (e.target === document.getElementById('modal-ov')) closeModal(); }
+        function closeModal() { document.getElementById('modal-ov').classList.remove('open'); }
+
+        // ── TOAST ──
+        function toast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(PX.toastTimer);
+            PX.toastTimer = setTimeout(function () { t.classList.remove('show'); }, 3500);
+        }
+    </script>
+</body>
+
+</html>
