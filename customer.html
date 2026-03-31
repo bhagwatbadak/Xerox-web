@@ -734,12 +734,12 @@
 
 <body>
 
-    <!-- Auth guard — shown while checking login -->
+    <!-- Auth guard — shown while checking  -->
     <div class="auth-guard" id="auth-guard">
         <div
             style="width:28px;height:28px;border:3px solid #ece6d9;border-top-color:#d4410c;border-radius:50%;animation:spin .7s linear infinite;">
         </div>
-        Checking login…
+        Checking …
     </div>
 
     <nav>
@@ -930,7 +930,7 @@
         window.addEventListener('load', async function () {
             var { data } = await sb.auth.getSession();
             if (!data.session) {
-                window.location.href = 'login.html';
+                window.location.href = 'index.html';
                 return;
             }
             // Check role — if shopkeeper somehow lands here, redirect
@@ -949,7 +949,7 @@
 
         async function logout() {
             await sb.auth.signOut();
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
 
         // ── FILE ──
