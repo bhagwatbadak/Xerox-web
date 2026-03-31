@@ -294,7 +294,8 @@
 
 <body>
     <div class="card">
-        <div class="logo">PrintXero <span class="logo-chip">XEROX</span></div>
+        <div class="logo">Krishna_Stationary </div>
+        <div> <span class="logo-chip">XEROX</span></div>
         <div class="tagline">Your neighbourhood print service — now online.</div>
 
         <!-- Tab: Login / Sign up -->
@@ -401,7 +402,7 @@
                     options: { data: { full_name: name } }
                 });
                 if (error) { showErr(error.message); setLoading(false); return; }
-                showOk('Account created! Check your email to confirm, then sign in.');
+                showOk('Account created! sign in Now .');
                 setLoading(false);
             }
         }
@@ -419,13 +420,13 @@
             var { data, error } = await sb.from('profiles').select('role').eq('id', userId).single();
             if (error || !data) {
                 // Profile might not exist yet (race condition on signup) — default to customer
-                window.location.href = 'customer.html';
+                window.location.href = 'dashboard.html';
                 return;
             }
             if (data.role === 'shopkeeper') {
                 window.location.href = 'shopkeeper.html';
             } else {
-                window.location.href = 'customer.html';
+                window.location.href = 'dashboard.html';
             }
         }
 
