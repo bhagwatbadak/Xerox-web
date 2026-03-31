@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Krishna Stationery Shop | The Digital Curator</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&amp;family=Manrope:wght@300;400;600;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&amp;display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#ffb77d",
+                        "outline-variant": "#c0c9c3",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-low": "#f5f3ee",
+                        "primary-container": "#1b4d3e",
+                        "inverse-primary": "#9ed1bd",
+                        "surface-bright": "#fbf9f4",
+                        "on-tertiary-container": "#ff986b",
+                        "secondary-container": "#fe932c",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-container": "#7a2c00",
+                        "primary-fixed-dim": "#9ed1bd",
+                        "on-background": "#1b1c19",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "surface-dim": "#dbdad5",
+                        "surface-container-highest": "#e4e2dd",
+                        "secondary-fixed": "#ffdcc3",
+                        "secondary": "#904d00",
+                        "surface-tint": "#376757",
+                        "on-primary-fixed-variant": "#1d4f40",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#30312e",
+                        "tertiary": "#561c00",
+                        "on-tertiary-fixed": "#360f00",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#baeed9",
+                        "on-surface": "#1b1c19",
+                        "surface-container": "#f0eee9",
+                        "surface": "#fbf9f4",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#8abda9",
+                        "on-primary-fixed": "#002117",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#eae8e3",
+                        "on-secondary-container": "#663500",
+                        "on-secondary-fixed": "#2f1500",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "background": "#fbf9f4",
+                        "outline": "#707974",
+                        "on-surface-variant": "#404945",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#003629",
+                        "surface-variant": "#e4e2dd",
+                        "inverse-on-surface": "#f2f1ec"
+                    },
+                    fontFamily: {
+                        "headline": ["Noto Serif"],
+                        "body": ["Manrope"],
+                        "label": ["Manrope"],
+                        "cursive": ["Pinyon Script", "cursive"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .tonal-shift {
+            background: linear-gradient(180deg, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+        }
+
+        .logout-btn {
+            background: none;
+            border: 1px solid rgba(12, 12, 16, .15);
+            border-radius: 7px;
+            padding: 5px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            color: #6e6a63;
+            font-family: 'DM Sans', sans-serif;
+            transition: all .2s;
+        }
+
+        .logout-btn:hover {
+            background: #0c0c10;
+            color: #fff;
+            border-color: #0c0c10;
+        }
+
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .asymmetric-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 2rem;
+        }
+    </style>
+</head>
+
+<body class="bg-surface text-on-surface font-body selection:bg-primary-fixed selection:text-on-primary-fixed">
+    <!-- TopNavBar -->
+    <nav
+        class="fixed top-0 w-full z-50 bg-[#fbf9f4]/80 dark:bg-[#1b1c19]/80 backdrop-blur-md shadow-[0px_12px_32px_rgba(27,28,25,0.06)]">
+        <div class="flex justify-between items-center w-full px-8 py-4 max-w-screen-2xl mx-auto">
+            <div class="text-2xl font-['Noto_Serif'] font-black text-[#003629] dark:text-[#baeed9] italic">
+                Krishna Stationery Shop
+            </div>
+            <div class="hidden md:flex items-center gap-8 font-['Noto_Serif'] font-bold tracking-tight">
+                <a class="text-[#003629] dark:text-[#baeed9] border-b-2 border-[#904d00] pb-1 transition-all"
+                    href="#">Collections</a>
+                <a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#003629] dark:hover:text-[#baeed9] transition-colors"
+                    href="#">Fountain Pens</a>
+                <a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#003629] dark:hover:text-[#baeed9] transition-colors"
+                    href="getdetail.html">
+                    SCAN_US
+                </a>
+                <a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#003629] dark:hover:text-[#baeed9] transition-colors"
+                    href="customer.html">
+                    XEROX
+                </a>
+                <a class="text-[#1b1c19]/70 dark:text-[#fbf9f4]/70 hover:text-[#003629] dark:hover:text-[#baeed9] transition-colors"
+                    href="#">Our Story</a>
+            </div>
+            <div class="flex items-center gap-6">
+                <button
+                    class="hover:opacity-80 transition-opacity duration-300 active:scale-95 text-[#003629] dark:text-[#baeed9]">
+                    <span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+                </button>
+                <a href="index.html">
+                    <button
+                        class="hover:opacity-80 transition-opacity duration-300 active:scale-95 text-[#003629] dark:text-[#baeed9]">
+                        <span class="material-symbols-outlined">person</span>
+                    </button>
+                </a>
+            </div>
+        </div>
+    </nav>
+    <main class="pt-20">
+        <!-- Hero Section -->
+        <section class="relative h-[921px] flex items-center overflow-hidden px-8">
+            <div class="absolute inset-0 z-0">
+                <img alt="Boutique Stationery Interior"
+                    class="w-full h-full object-cover grayscale-[20%] brightness-[0.85]"
+                    data-alt="Luxurious boutique stationery store interior with dark wood shelving, warm ambient lighting, and high-end pens displayed in glass cases"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAckntsX_PoawsTNebXHL5i-kpwyTYbYDpQI54fHgj1bseVC0krlFUsTf_-d1LhJ67yuYHXmDEtWj8QWLgbgxwFEQxz_Ka-qjIQJUK7F3RIlUZmlzrCA5nJLLQEy1IsMN8bKCrsI8ek3j7Jd0sdNLJDV7G352xJpGz33MqHP4WfvGCTPJdJB-8zHj_lp1zbuzgf2Uk3vEfSuS1-TCdm-NM1H96nKS1BiJ7-Q1zrLDkZA9QJGVKtjQ0mi_Z-lOxgPUKb7b58NVN6KOo" />
+                <div class="absolute inset-0 bg-gradient-to-r from-primary/60 to-transparent"></div>
+            </div>
+            <div class="relative z-10 max-w-4xl ml-4 md:ml-12">
+                <h1 class="font-headline text-6xl md:text-8xl font-black text-surface leading-tight tracking-tighter">
+                    Krishna <br />
+                    <span class="italic font-normal opacity-90">Stationery Shop</span>
+                </h1>
+                <p class="mt-6 text-surface/90 text-lg md:text-xl max-w-xl font-light leading-relaxed">
+                    Elevate the art of the written word. We curate instruments for the modern philosopher and the
+                    digital curator.
+                </p>
+                <div class="mt-10 flex gap-4">
+                    <button
+                        class="bg-secondary-container text-on-secondary-fixed px-8 py-4 rounded-md font-bold text-lg hover:opacity-90 transition-all flex items-center gap-2 shadow-lg">
+                        Explore Collection
+                        <span class="material-symbols-outlined" data-icon="arrow_right_alt">arrow_right_alt</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+        <!-- Featured Collections (Bento Style) -->
+        <section class="py-24 px-8 max-w-screen-2xl mx-auto">
+            <div class="mb-16">
+                <h2 class="font-headline text-4xl font-bold text-primary mb-2">Curated Instruments</h2>
+                <div class="h-1 w-24 bg-secondary"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                <!-- Large Feature: Fountain Pens -->
+                <div class="md:col-span-8 bg-surface-container-low rounded-xl overflow-hidden group">
+                    <div class="flex flex-col md:flex-row h-full">
+                        <div class="p-10 flex-1 flex flex-col justify-center">
+                            <span class="text-secondary font-bold tracking-widest uppercase text-xs mb-4">Masterpiece
+                                Series</span>
+                            <h3 class="font-headline text-4xl text-primary mb-4">The Artisan Fountain Pen</h3>
+                            <p class="text-on-surface-variant mb-8 max-w-sm">Hand-turned barrels featuring deep emerald
+                                lacquer and 14k gold nibs for a seamless ink flow.</p>
+                            <a class="text-primary font-bold flex items-center gap-2 hover:translate-x-2 transition-transform"
+                                href="#">
+                                Shop Nibs <span class="material-symbols-outlined"
+                                    data-icon="north_east">north_east</span>
+                            </a>
+                        </div>
+                        <div class="flex-1 min-h-[400px]">
+                            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                data-alt="Close-up of a high-end fountain pen with an intricate gold nib resting on a dark green leather surface"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNsv0LIzEGnURRs280CEHDT0rn53av7hmf5O2qC1w02Oyb7LcZ1tYKAMS36WA2aEGkkYPGF6JVU9iY5lodpdf9wnszKrVsgMjztSn1IOw5lMF4h6pAC3nK7Zl7VxfCPSvMxbmumLtI7a14YmhMGy9SKKkBzILHiY4OSjPq4h70lte4xz9lIPsJ3X7ejTP8-IPQvPuwQhBkdtWHJHkMvhj_TEu_9zojeAVb42_Mr5L-FlP-wXoFO-gyNVJ0OI1Doq3wkRmFvUW546c" />
+                        </div>
+                    </div>
+                </div>
+                <!-- Small Feature: Ink -->
+                <div class="md:col-span-4 bg-primary text-on-primary rounded-xl p-8 flex flex-col justify-between">
+                    <div>
+                        <span class="material-symbols-outlined text-secondary-container text-4xl mb-6"
+                            data-icon="ink_bottle">ink_pen</span>
+                        <h3 class="font-headline text-3xl mb-4">Deep Emerald Inks</h3>
+                        <p class="text-on-primary-container text-sm leading-relaxed">Exclusive pigments designed to
+                            bleed slowly and dry with a unique sheen.</p>
+                    </div>
+                    <button
+                        class="mt-8 border border-primary-fixed/30 py-3 rounded-md hover:bg-surface/10 transition-colors">
+                        View Palette
+                    </button>
+                </div>
+                <!-- Small Feature: Journal -->
+                <div class="md:col-span-4 bg-surface-container-high rounded-xl overflow-hidden relative group">
+                    <img class="w-full h-64 object-cover"
+                        data-alt="A thick, artisanal leather-bound journal with creamy vellum pages lying open on a wooden desk"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1On4xHDucK2IOZTBhVOeE7TCJYpRwH3K259gskbmnfB79P4wa5Sqde-lgEHJum-1InB-vkS7NpS8eVQUSDMvdxsXRpik26rt_FCVV0PuCce9Mk6XaHwHwT6dfC7_pHUAzHHNdmmbYp84kfab2yxz9FQGnFYnyMjX0ivGAdvmQzrT4Bw4E2ZUQ_km1c3royf2uleZT7hj0POgCNVU6o1vyS17TK2dLFzH3uG_d95rsnLxpzjw-HpLkLqm7mKgaBkaeWGXmHL8yKr0" />
+                    <div class="p-6">
+                        <h3 class="font-headline text-2xl text-primary mb-2">Vellum Journals</h3>
+                        <p class="text-on-surface-variant text-sm mb-4">300 GSM archival paper for the serious sketcher.
+                        </p>
+                    </div>
+                </div>
+                <!-- Large Feature: Custom Sets -->
+                <div
+                    class="md:col-span-8 bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col md:flex-row border border-outline-variant/10">
+                    <div class="flex-1 min-h-[300px]">
+                        <img class="w-full h-full object-cover"
+                            data-alt="Top-down flat lay of a stationery gift set including a pen, wax seal, and elegant envelopes in dark tones"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBaZdgKzeq3au-j1vEZUsit9tguFw1R6sDsJ7_KfNxJasmM9E8D2_YEtHZDeWjk3dBkvELsdsQv0q3X0a7Ru7OmEPVRBPzVXF--ON1jl5cRDPY5USPyGre5CQi_3M1rda5XbfI19T78qFFehHmNFpkWqgGziOn6_Zbo0HvRU6OGPQVZ5TXE5skRazOYiAKVkBy3Zyg_y2wUVDaczaW4fENSHDDLhn93J1d21CyTFuBy7DntfLinmH6xWbCMuiwwJaH7F426zq0lZ50" />
+                    </div>
+                    <div class="flex-1 p-10 flex flex-col justify-center bg-[#fbf9f4]">
+                        <h3 class="font-headline text-3xl text-primary mb-4">Curated Gift Sets</h3>
+                        <p class="text-on-surface-variant mb-6">The perfect starting point for any digital curator's
+                            physical workspace.</p>
+                        <button
+                            class="bg-primary text-on-primary px-6 py-3 rounded-md self-start hover:opacity-90 transition-opacity">
+                            Build Your Box
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- QR Code Section -->
+        <section class="bg-surface-container py-24 px-8 overflow-hidden relative">
+            <div class="max-w-4xl mx-auto text-center relative z-10">
+                <div class="mb-12 inline-block">
+                    <span class="text-primary font-headline text-lg tracking-[0.2em] uppercase">Join the Atelier</span>
+                </div>
+                <div
+                    class="bg-surface-container-lowest p-8 rounded-3xl inline-block shadow-[0px_12px_32px_rgba(27,28,25,0.06)] border border-outline-variant/15 relative">
+                    <!-- Faux QR Code Design using CSS -->
+                    <div class="w-64 h-64 bg-primary rounded-xl flex items-center justify-center p-4 relative">
+                        <div class="grid grid-cols-5 grid-rows-5 gap-2 w-full h-full opacity-90">
+                            <!-- Just visual representation of QR blocks -->
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-secondary-container rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-primary-fixed rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-secondary-container rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-primary-fixed rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-secondary-container rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-surface-container-lowest rounded-sm"></div>
+                            <div class="bg-primary-fixed rounded-sm"></div>
+                        </div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <div class="bg-surface-container-lowest p-2 rounded-full shadow-lg">
+                                <span class="material-symbols-outlined text-primary text-3xl"
+                                    data-icon="ink_pen">ink_pen</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 space-y-4">
+                    <p class="font-cursive text-5xl text-secondary">Scan this to get our details</p>
+                    <p class="text-on-surface-variant font-body text-sm tracking-wide">Instant access to our lookbook,
+                        shop locations, and member events.</p>
+                </div>
+            </div>
+            <!-- Decorative Elements -->
+            <div
+                class="absolute top-0 right-0 w-64 h-64 bg-primary-fixed/20 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2">
+            </div>
+
+            <div
+                class="absolute bottom-0 left-0 w-96 h-96 bg-secondary-fixed/10 blur-3xl rounded-full -translate-x-1/2 translate-y-1/2">
+
+            </div>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="w-full py-12 px-8 mt-auto bg-[#f0eee9] dark:bg-[#1b1c19]">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-8 max-w-7xl mx-auto">
+            <div class="flex flex-col items-center md:items-start gap-4">
+                <div class="text-xl font-['Noto_Serif'] font-bold text-[#003629] dark:text-[#baeed9]">
+                    Krishna Stationery Shop
+                </div>
+                <p class="font-['Manrope'] text-sm tracking-wide uppercase text-[#1b1c19]/60 dark:text-[#fbf9f4]/60">
+                    © 2024 Krishna Stationery Shop. Crafted for the Digital Curator.
+                </p>
+            </div>
+            <div class="flex flex-wrap justify-center gap-8 font-['Manrope'] text-sm tracking-wide uppercase">
+                <a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:text-[#003629] dark:hover:text-[#baeed9] underline-offset-4 hover:underline transition-all duration-200"
+                    href="#">Sustainability</a>
+                <a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:text-[#003629] dark:hover:text-[#baeed9] underline-offset-4 hover:underline transition-all duration-200"
+                    href="#">Shipping &amp; Returns</a>
+                <a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:text-[#003629] dark:hover:text-[#baeed9] underline-offset-4 hover:underline transition-all duration-200"
+                    href="#">Wholesale</a>
+                <a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:text-[#003629] dark:hover:text-[#baeed9] underline-offset-4 hover:underline transition-all duration-200"
+                    href="#">Contact Us</a>
+                <a class="text-[#1b1c19]/60 dark:text-[#fbf9f4]/60 hover:text-[#003629] dark:hover:text-[#baeed9] underline-offset-4 hover:underline transition-all duration-200"
+                    href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
