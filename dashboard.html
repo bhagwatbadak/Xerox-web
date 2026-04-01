@@ -152,17 +152,35 @@
                     <span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
                 </button>
                <button
-    onclick="logout()"
-    class="hover:opacity-80 transition-opacity duration-300 active:scale-95 text-[#003629] dark:text-[#baeed9]">
-    <span class="material-symbols-outlined">logout</span>
-</button>
+   
+                <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-<script>
-async function logout() {
-    await sb.auth.signOut();   // Logout from Supabase
-    window.location.href = "index.html";   // Redirect to login page
-}
-</script>
+                <button onclick="logout()"
+                    class="hover:opacity-80 transition-opacity duration-300 active:scale-95 text-[#003629] dark:text-[#baeed9]">
+                    <span class="material-symbols-outlined">logout</span>
+                </button>
+
+                <script>
+                    const SUPABASE_URL = "https://nyoergouyiazkqhvftcc.supabase.co";
+                    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im55b2VyZ291eWlhemtxaHZmdGNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MDA5NDAsImV4cCI6MjA5MDM3Njk0MH0.rHL6RQBdRlmuPgRdRqjpTJ5xkyPIIiubhR6GkHrVUGA";
+
+                    // IMPORTANT: correct way to create client
+                    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+                    async function logout() {
+                        console.log("Logout clicked");
+
+                        const { error } = await sb.auth.signOut();
+
+                        if (error) {
+                            console.error("Logout failed:", error.message);
+                        } else {
+                            console.log("Logout success");
+                            window.location.href = "index.html";
+                        }
+                    }
+                </script>
+
                 </a>
             </div>
         </div>
